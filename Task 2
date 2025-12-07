@@ -1,0 +1,57 @@
+from google.colab import files
+uploaded = files.upload()
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load dataset
+df = pd.read_excel("titanic.xlsx")
+
+# View first 5 rows
+df.head()
+# Dataset shape
+print("Rows & Columns:", df.shape)
+
+# Column names
+print("Columns:", df.columns)
+
+# Data types and missing values
+df.info()
+
+# Statistical summary
+df.describe()
+print(df.isnull().sum())
+# Fill missing Age with median
+if 'Age' in df.columns:
+    df['Age'] = df['Age'].fillna(df['Age'].median())
+
+# Fill missing Embarked with mode
+if 'Embarked' in df.columns:
+    df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])
+
+# Drop Cabin column if it exists (too many missing values)
+if 'Cabin' in df.columns:
+    df = df.drop(columns=['Cabin'])
+if 'Survived' in df.columns:
+    sns.countplot(x='Survived', data=df)
+    plt.title('Survival Count')
+    plt.show()
+if 'Sex' in df.columns:
+    sns.countplot(x='Sex', hue='Survived', data=df)
+    plt.title('Gender vs Survival')
+    plt.show()
+if 'Age' in df.columns:
+    plt.hist(df['Age'], bins=20)
+    plt.title('Age Distribution')
+    plt.xlabel('Age')
+    plt.ylabel('Count')
+    plt.show()
+if 'Pclass' in df.columns:
+    sns.countplot(x='Pclass', hue='Survived', data=df)
+    plt.title('Passenger Class vs Survival')
+    plt.show()
+plt.figure(figsize=(8,6))
+sns.heatmap(df.corr(numeric_only=True), annot=True, cmap='coolwarm')
+plt.title("Correlation Heatmap")
+plt.show()
